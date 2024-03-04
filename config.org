@@ -1,0 +1,118 @@
+#+STARTUP: content
+
+* MELPA Setup
+
+#+begin_src emacs-lisp
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (package-initialize)
+#+end_src
+
+* Move Backup Directory
+
+#+begin_src emacs-lisp
+  (setq backup-directory-alist
+	`(("." . ,(expand-file-name ".emacs-backup" temporary-file-directory))))
+#+end_src
+
+* General Keybindings
+
+#+begin_src emacs-lisp
+  (defun my/open-config-org ()
+    "Open the config.org configuration file."
+    (interactive)
+    (find-file (expand-file-name "config.org" user-emacs-directory)))
+
+  (defun my/open-config ()
+    "Open the init.el configuration file."
+    (interactive)
+    (find-file (expand-file-name "init.el" user-emacs-directory)))
+
+  (defun my/reload-config ()
+    "Reload init.el."
+    (interactive)
+    (load-file (expand-file-name "init.el" user-emacs-directory)))
+
+  (keymap-global-set "C-c f c" 'my/open-config-org)  ; open config.org
+  (keymap-global-set "C-c f i" 'my/open-config)      ; open init.el
+  (keymap-global-set "C-c r i" 'my/reload-config)    ; reload init.el
+#+end_src
+
+* Evil Mode
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :ensure t
+    :init
+    (setq evil-undo-system 'undo-redo)
+    :hook ((text-mode
+	    prog-mode
+	    conf-mode) . evil-local-mode))
+#+end_src
+
+* Magit
+
+#+begin_src emacs-lisp
+  (use-package magit
+    :ensure t)
+#+end_src
+
+* Language Support
+
+** Markdown
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :mode ("README\\.md\\'" . gfm-mode))
+#+end_src
+
+** Git Modes
+
+Adds support for Git-related files, namely =.gitignore=.
+
+#+begin_src emacs-lisp
+  (use-package git-modes
+    :ensure t)
+#+end_src
+
+* Editor Settings
+
+** Font Settings
+
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist
+	       '(font . "Fira Code-16"))
+#+end_src
+
+** Themes
+
+#+begin_src emacs-lisp
+  (use-package doom-themes
+    :ensure t
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+	  doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    (load-theme 'doom-one t)
+
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    ;; Enable custom neotree theme (all-the-icons must be installed!)
+    (doom-themes-neotree-config)
+    ;; or for treemacs users
+    (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+    (doom-themes-treemacs-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
+#+end_src
+
+** Sanity Settings 
+
+#+begin_src emacs-lisp
+  ;; Always display line numbers.
+  (global-display-line-numbers-mode)
+
+  ;; Auto-pair braces
+  (electric-pair-mode)
+#+end_src
